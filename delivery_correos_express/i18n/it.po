@@ -87,7 +87,7 @@ msgstr ""
 #. module: delivery_correos_express
 #: code:addons/delivery_correos_express/models/correos_express_request.py:0
 #, python-format
-msgid "Correos Express Error: {} {}"
+msgid "Correos Express Error:"
 msgstr ""
 
 #. module: delivery_correos_express

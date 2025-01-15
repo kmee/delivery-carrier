@@ -21,8 +21,8 @@ class DeliveryCarrier(models.Model):
         selection_add=[("correos_express", "Correos Express")],
         ondelete={"correos_express": "set default"},
     )
-    correos_express_username = fields.Char(string="Correos Express Username")
-    correos_express_password = fields.Char(string="Correos Express Password")
+    correos_express_username = fields.Char()
+    correos_express_password = fields.Char()
     correos_express_customer_code = fields.Char(string="Correos Express Client code")
     correos_express_sender_code = fields.Char(string="Correos Express Sender ID")
     correos_express_label_type = fields.Selection(
@@ -34,14 +34,18 @@ class DeliveryCarrier(models.Model):
         default="93",
     )
     correos_express_transport = fields.Selection(
-        string="Correos Express Transport",
-        selection=CORREOS_EXPRESS_PORTES,
-        default="P",
+        selection=CORREOS_EXPRESS_PORTES, default="P"
     )
 
     def correos_express_get_tracking_link(self, picking):
         tracking_url = "https://s.correosexpress.com/c?n={}"
         return tracking_url.format(picking.carrier_tracking_ref)
+
+    def _format_correos_express_phone(self, phone):
+        """Switch international prefix + to 00, as it's the one accepted by Correos
+        Express, and remove spaces in the string for not overpassing the 15 chars limit.
+        """
+        return phone.replace("+", "00").replace(" ", "")[:15]
 
     def _get_partner_streets(self, partner):
         streets = []
@@ -67,7 +71,7 @@ class DeliveryCarrier(models.Model):
             "paisISODest": partner.country_id.code or "",
             "codPosIntDest": partner.zip if not national else "",
             "contacDest": partner.name[:40] if partner.name else "",  # mandatory
-            "telefDest": phone[:15] if phone else "",  # mandatory
+            "telefDest": self._format_correos_express_phone(phone),  # mandatory
             "emailDest": partner.email[:75] if partner.email else "",
         }
 
@@ -84,7 +88,7 @@ class DeliveryCarrier(models.Model):
             "paisISORte": partner.country_id.code or "",
             "codPosIntRte": "",
             "contacRte": partner.name or "",
-            "telefRte": partner.phone or "",
+            "telefRte": self._format_correos_express_phone(partner.phone or ""),
             "emailRte": partner.email or "",
         }
 

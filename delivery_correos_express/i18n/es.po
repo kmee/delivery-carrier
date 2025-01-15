@@ -92,8 +92,8 @@ msgstr "Configuración Correos Express"
 #. module: delivery_correos_express
 #: code:addons/delivery_correos_express/models/correos_express_request.py:0
 #, python-format
-msgid "Correos Express Error: {} {}"
-msgstr "Error Correos Express: {} {}"
+msgid "Correos Express Error:"
+msgstr "Error de Correos Express:"
 
 #. module: delivery_correos_express
 #: model:ir.model.fields,field_description:delivery_correos_express.field_delivery_carrier__correos_express_label_type

@@ -77,15 +77,13 @@ class CorreosExpressRequest(object):
             self.carrier_id.log_xml(result, "correos_express_last_response")
             _logger.debug(res.json())
             res.raise_for_status()
-        except requests.exceptions.Timeout:
-            raise UserError(_("Timeout: the server did not reply within 60s"))
+        except requests.exceptions.Timeout as e:
+            raise UserError(_("Timeout: the server did not reply within 60s")) from e
         except Exception as e:
-            raise UserError(_("{}\n{}".format(e, result if result else "")))
+            raise UserError(f"{e}\n{result or ''}") from e
         return_code, message = self._check_for_error(result)
         if return_code != 0:
-            raise UserError(
-                _("Correos Express Error: {} {}").format(return_code, message)
-            )
+            raise UserError(_("Correos Express Error:") + f" {return_code} {message}")
         return res
 
     def _check_for_error(self, result):
